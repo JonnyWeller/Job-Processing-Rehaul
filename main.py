@@ -9,10 +9,11 @@ import pgeocode
 import time
 from pyplaced.db_helpers import create_conn
 from dotenv import load_dotenv
+import os
 
 
 def UpdateFeedLiveJobs(df):
-    load_dotenv("C:/Users/Jonny W/PycharmProjects/job-offer/.env")
+    load_dotenv()
     conn, cur = create_conn(credentials_dict=None)
     sql = """
     INSERT INTO landing.feed_live_jobs
@@ -78,8 +79,7 @@ def get_longitude(post_code: str):
 
 def main():
     tic = time.perf_counter()
-    url = 'https://apply.placed-app.com/feeds/xmlfeed?feed_id=0&feed_name=appcast_all_jobs_main_feed.xml'
-    # url = 'https://apply.placed-app.com/feeds/xmlfeed?feed_id=0&feed_name=appcast_main_feed.xml'
+    url = os.getenv('feed_url')
 
     http = urllib3.PoolManager()
 
@@ -120,16 +120,6 @@ def main():
     df = df[~df['description'].isnull()]
     df = df[~df['postcode'].isnull()]
 
-    # Quick mapping from postcode to lat lng - python library?
-    # df['latitude'] = df.postcode.apply(get_latitude)
-    # df['longitude'] = df.postcode.apply(get_longitude)
-
-    # df['valid'] = df.latitude.apply(check_existing)
-    # df = df[df.valid]
-    #
-    # df['valid'] = df.longitude.apply(check_existing)
-    # df = df[df.valid]
-
     df['part_time'] = df.employment_type.apply(get_part_time)
     df['full_time'] = df.employment_type.apply(get_full_time)
 
@@ -140,7 +130,7 @@ def main():
     df['benefits'] = None
 
     # filter out NaN values from lat / lng
-    # df = df[~df['latitude'].isna()]
+    df = df[~df['latitude'].isna()]
 
     # Re-order columns
     df = df[
