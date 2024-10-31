@@ -18,9 +18,6 @@ from twilio.rest import Client
 import time
 from dotenv import load_dotenv
 
-
-# load_dotenv('/home/charliegv2/.env')
-# FILEPATH = '/home/charliegv2/ad_operations/alerts/'
 FILEPATH = "./"
 
 SLACK_WEBHOOK = os.getenv('slack_webhook')
